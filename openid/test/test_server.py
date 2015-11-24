@@ -169,7 +169,7 @@ class TestDecode(unittest.TestCase):
             }
         try:
             result = self.decode(args)
-        except TypeError, err:
+        except TypeError as err:
             self.failUnless(str(err).find('values') != -1, err)
         else:
             self.fail("Expected TypeError, but got result %s" % (result,))
@@ -309,7 +309,7 @@ class TestDecode(unittest.TestCase):
             }
         try:
             result = self.decode(args)
-        except server.ProtocolError, err:
+        except server.ProtocolError as err:
             self.failUnless(err.openid_message)
         else:
             self.fail("Expected ProtocolError, instead returned with %s" %
@@ -325,7 +325,7 @@ class TestDecode(unittest.TestCase):
             }
         try:
             result = self.decode(args)
-        except server.UntrustedReturnURL, err:
+        except server.UntrustedReturnURL as err:
             self.failUnless(err.openid_message)
         else:
             self.fail("Expected UntrustedReturnURL, instead returned with %s" %
@@ -492,12 +492,12 @@ class TestDecode(unittest.TestCase):
         self.failUnlessRaises(server.ProtocolError, self.decode, args)
 
     def test_invalidns(self):
-	args = {'openid.ns': 'Tuesday',
-		'openid.mode': 'associate'}
+        args = {'openid.ns': 'Tuesday',
+                'openid.mode': 'associate'}
 
         try:
             r = self.decode(args)
-        except server.ProtocolError, err:
+        except server.ProtocolError as err:
             # Assert that the ProtocolError does have a Message attached
             # to it, even though the request wasn't a well-formed Message.
             self.failUnless(err.openid_message)
@@ -526,8 +526,7 @@ class TestEncode(unittest.TestCase):
             trust_root = 'http://burr.unittest/',
             return_to = 'http://burr.unittest/999',
             immediate = False,
-            op_endpoint = self.server.op_endpoint,
-            )
+            op_endpoint = self.server.op_endpoint,)
         request.message = Message(OPENID2_NS)
         response = server.OpenIDResponse(request)
         response.fields = Message.fromOpenIDArgs({
@@ -535,8 +534,7 @@ class TestEncode(unittest.TestCase):
             'mode': 'id_res',
             'identity': request.identity,
             'claimed_id': request.identity,
-            'return_to': request.return_to,
-            })
+            'return_to': request.return_to,})
 
         self.failIf(response.renderAsForm())
         self.failUnless(response.whichEncoding() == server.ENCODE_URL)
@@ -879,7 +877,7 @@ class TestCheckID(unittest.TestCase):
         self.request.message = sentinel
         try:
             result = self.request.trustRootValid()
-        except server.MalformedTrustRoot, why:
+        except server.MalformedTrustRoot as why:
             self.failUnless(sentinel is why.openid_message)
         else:
             self.fail('Expected MalformedTrustRoot exception. Got %r'
@@ -917,7 +915,7 @@ class TestCheckID(unittest.TestCase):
 
         try:
             withVerifyReturnTo(vrfyExc, self.request.returnToVerified)
-        except Exception, e:
+        except Exception as e:
             self.failUnless(e is sentinel, e)
 
         # Ensure that True and False are passed through unchanged
@@ -1988,10 +1986,10 @@ class TestSignatory(unittest.TestCase, CatchLogs):
         self.failIf(self.messages, self.messages)
 
     def test_getAssocExpired(self):
-	assoc_handle = self.makeAssoc(dumb=True, lifetime=-10)
+        assoc_handle = self.makeAssoc(dumb=True, lifetime=-10)
         assoc = self.signatory.getAssociation(assoc_handle, True)
         self.failIf(assoc, assoc)
-	self.failUnless(self.messages)
+        self.failUnless(self.messages)
 
     def test_getAssocInvalid(self):
         ah = 'no-such-handle'

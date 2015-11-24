@@ -442,7 +442,7 @@ def verifyReturnTo(realm_str, return_to, _vrfy=getAllowedReturnURLs):
 
     try:
         allowable_urls = _vrfy(realm.buildDiscoveryURL())
-    except RealmVerificationRedirected, err:
+    except RealmVerificationRedirected as err:
         logging.exception(str(err))
         return False
 

@@ -1,6 +1,8 @@
 import sys
 import random
 import os.path
+if sys.version_info > (3,):
+    long = int
 
 from openid import cryptutil
 
@@ -17,15 +19,15 @@ def test_cryptrand():
     assert len(t) == 32
     assert s != t
 
-    a = cryptutil.randrange(2L ** 128)
-    b = cryptutil.randrange(2L ** 128)
+    a = cryptutil.randrange(long(2) ** 128)
+    b = cryptutil.randrange(long(2) ** 128)
     assert type(a) is long
     assert type(b) is long
     assert b != a
 
     # Make sure that we can generate random numbers that are larger
     # than platform int size
-    cryptutil.randrange(long(sys.maxint) + 1L)
+    cryptutil.randrange(long(sys.maxint) + long(1))
 
 def test_reversed():
     if hasattr(cryptutil, 'reversed'):
@@ -52,7 +54,7 @@ def test_reversed():
 def test_binaryLongConvert():
     MAX = sys.maxint
     for iteration in xrange(500):
-        n = 0L
+        n = long(0)
         for i in range(10):
             n += long(random.randrange(MAX))
 
@@ -62,14 +64,14 @@ def test_binaryLongConvert():
         assert n == n_prime, (n, n_prime)
 
     cases = [
-        ('\x00', 0L),
-        ('\x01', 1L),
-        ('\x7F', 127L),
-        ('\x00\xFF', 255L),
-        ('\x00\x80', 128L),
-        ('\x00\x81', 129L),
-        ('\x00\x80\x00', 32768L),
-        ('OpenID is cool', 1611215304203901150134421257416556L)
+        ('\x00', long(0)),
+        ('\x01', long(1)),
+        ('\x7F', long(127)),
+        ('\x00\xFF', long(255)),
+        ('\x00\x80', long(128)),
+        ('\x00\x81', long(129)),
+        ('\x00\x80\x00', long(32768)),
+        ('OpenID is cool', long(1611215304203901150134421257416556))
         ]
 
     for s, n in cases:

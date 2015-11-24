@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 import os.path
-import urlparse
+try:
+    import urllib.parse as urlparse
+except ImportError:
+    import urlparse
 
 from openid.test import discoverdata
 
