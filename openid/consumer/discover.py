@@ -13,7 +13,10 @@ __all__ = [
     'discover',
     ]
 
-import urlparse
+try:
+    import urllib.parse as urlparse
+except ImportError:
+    import urlparse
 import logging
 
 from openid import fetchers, urinorm
@@ -305,7 +308,7 @@ def normalizeURL(url):
     DiscoveryFailure"""
     try:
         normalized = urinorm.urinorm(url)
-    except ValueError, why:
+    except ValueError as why:
         raise DiscoveryFailure('Normalizing identifier: %s' % (why[0],), None)
     else:
         return urlparse.urldefrag(normalized)[0]

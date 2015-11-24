@@ -9,7 +9,10 @@ import re
 XRI_AUTHORITIES = ['!', '=', '@', '+', '$', '(']
 
 try:
-    unichr(0x10000)
+    try:
+        unichr(0x10000)
+    except NameError:
+        chr(0x10000)
 except ValueError:
     # narrow python build
     UCSCHAR = [
@@ -49,9 +52,14 @@ else:
         ]
 
 
-_escapeme_re = re.compile('[%s]' % (''.join(
-    map(lambda (m, n): u'%s-%s' % (unichr(m), unichr(n)),
-        UCSCHAR + IPRIVATE)),))
+try:
+    _escapeme_re = re.compile('[%s]' % (''.join(
+        map(lambda mn: '%s-%s' % (chr(mn[0]), chr(mn[1])),
+            UCSCHAR + IPRIVATE)),))
+except:
+    _escapeme_re = re.compile('[%s]' % (''.join(
+        map(lambda mn: u'%s-%s' % (unichr(mn[0]), unichr(mn[1])),
+            UCSCHAR + IPRIVATE)),))
 
 
 def identifierScheme(identifier):

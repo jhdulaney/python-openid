@@ -10,9 +10,10 @@ def getTestData():
     filename = os.path.join(os.path.dirname(__file__), 'data', 'accept.txt')
     i = 1
     lines = []
-    for line in file(filename):
-        lines.append((i, line))
-        i += 1
+    with open(filename, 'r') as in_file:
+        for line in in_file:
+            lines.append((i, line))
+            i += 1
     return lines
 
 def chunk(lines):
@@ -106,7 +107,7 @@ def pyUnitTests():
         try:
             available = parseAvailable(avail_data)
         except:
-            print 'On line', lno
+            print('On line', lno)
             raise
 
         lno, exp_data = data['expected']
@@ -114,7 +115,7 @@ def pyUnitTests():
         try:
             expected = parseExpected(exp_data)
         except:
-            print 'On line', lno
+            print('On line', lno)
             raise
 
         descr = 'MatchAcceptTest for lines %r' % (lnos,)

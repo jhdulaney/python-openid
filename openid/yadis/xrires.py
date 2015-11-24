@@ -2,7 +2,10 @@
 """XRI resolution.
 """
 
-from urllib import urlencode
+try:
+    from urllib.parse import urlencode
+except ImportError:
+    from urllib import urlencode
 from openid import fetchers
 from openid.yadis import etxrd
 from openid.yadis.xri import toURINormal

@@ -1,4 +1,7 @@
-import urlparse
+try:
+    from urllib.parse import urlparse
+except ImportError:
+    import urlparse
 import cgi
 import time
 import warnings
@@ -26,7 +29,7 @@ from openid.fetchers import HTTPResponse, HTTPFetchingError
 from openid import fetchers
 from openid.store import memstore
 
-from support import CatchLogs
+from openid.test.support import CatchLogs
 
 assocs = [
     ('another 20-byte key.', 'Snarky'),
@@ -91,10 +94,10 @@ class GoodAssocStore(memstore.MemoryStore):
 
 
 class TestFetcher(object):
-    def __init__(self, user_url, user_page, (assoc_secret, assoc_handle)):
+    def __init__(self, user_url, user_page, assoc):
         self.get_responses = {user_url:self.response(user_url, 200, user_page)}
-        self.assoc_secret = assoc_secret
-        self.assoc_handle = assoc_handle
+        self.assoc_secret = assoc[0]
+        self.assoc_handle = assoc[1]
         self.num_assocs = 0
 
     def response(self, url, status, body):
@@ -370,7 +373,7 @@ class TestQueryFormat(TestIdRes):
         query = {'openid.mode': ['cancel']}
         try:
             r = Message.fromPostArgs(query)
-        except TypeError, err:
+        except TypeError as err:
             self.failUnless(str(err).find('values') != -1, err)
         else:
             self.fail("expected TypeError, got this instead: %s" % (r,))
@@ -672,7 +675,7 @@ class TestSetupNeeded(TestIdRes):
     def failUnlessSetupNeeded(self, expected_setup_url, message):
         try:
             self.consumer._checkSetupNeeded(message)
-        except SetupNeededError, why:
+        except SetupNeededError as why:
             self.failUnlessEqual(expected_setup_url, why.user_setup_url)
         else:
             self.fail("Expected to find an immediate-mode response")
@@ -787,7 +790,7 @@ class IdResCheckForFieldsTest(TestIdRes):
             message = Message.fromOpenIDArgs(openid_args)
             try:
                 self.consumer._idResCheckForFields(message)
-            except ProtocolError, why:
+            except ProtocolError as why:
                 self.failUnless(why[0].startswith('Missing required'))
             else:
                 self.fail('Expected an error, but none occurred')
@@ -798,7 +801,7 @@ class IdResCheckForFieldsTest(TestIdRes):
             message = Message.fromOpenIDArgs(openid_args)
             try:
                 self.consumer._idResCheckForFields(message)
-            except ProtocolError, why:
+            except ProtocolError as why:
                 self.failUnless(why[0].endswith('not signed'))
             else:
                 self.fail('Expected an error, but none occurred')
@@ -1476,7 +1479,7 @@ class ConsumerTest(unittest.TestCase):
         def test():
             try:
                 self.consumer.begin('unused in this test')
-            except DiscoveryFailure, why:
+            except DiscoveryFailure as why:
                 self.failUnless(why[0].startswith('Error fetching'))
                 self.failIf(why[0].find('Unit test') == -1)
             else:
@@ -1492,7 +1495,7 @@ class ConsumerTest(unittest.TestCase):
         def test():
             try:
                 self.consumer.begin(url)
-            except DiscoveryFailure, why:
+            except DiscoveryFailure as why:
                 self.failUnless(why[0].startswith('No usable OpenID'))
                 self.failIf(why[0].find(url) == -1)
             else:
@@ -1766,7 +1769,7 @@ class TestDiscoveryVerification(unittest.TestCase):
         self.services = [endpoint]
         try:
             r = self.consumer._verifyDiscoveryResults(self.message, endpoint)
-        except ProtocolError, e:
+        except ProtocolError as e:
             # Should we make more ProtocolError subclasses?
             self.failUnless(str(e), text)
         else:
@@ -1793,7 +1796,7 @@ class TestDiscoveryVerification(unittest.TestCase):
 
         try:
             r = self.consumer._verifyDiscoveryResults(self.message, endpoint)
-        except ProtocolError, e:
+        except ProtocolError as e:
             self.failUnlessEqual(str(e), text)
         else:
             self.fail("Exepected ProtocolError, %r returned" % (r,))
@@ -2074,7 +2077,7 @@ class TestKVPost(unittest.TestCase):
         response.body = "error:bonk\nerror_code:7\n"
         try:
             r = _httpResponseToMessage(response, self.server_url)
-        except ServerError, e:
+        except ServerError as e:
             self.failUnlessEqual(e.error_text, 'bonk')
             self.failUnlessEqual(e.error_code, '7')
         else:

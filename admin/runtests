@@ -1,5 +1,7 @@
 #!/usr/bin/env python
-import os.path, sys, warnings
+from __future__ import print_function
+
+import os.path, warnings, sys
 
 test_modules = [
     'cryptutil',

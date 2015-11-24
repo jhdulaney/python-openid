@@ -11,7 +11,10 @@ import cgi
 import unittest
 import warnings
 
-from urlparse import urlparse
+try:
+    from urllib.parse import urlparse
+except ImportError:
+    from urlparse import urlparse
 
 # In general, if you edit or add tests here, try to move in the direction
 # of testing smaller units.  For testing the external interfaces, we'll be

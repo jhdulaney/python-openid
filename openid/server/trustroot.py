@@ -20,7 +20,10 @@ __all__ = [
 from openid import urinorm
 from openid.yadis import services
 
-from urlparse import urlparse, urlunparse
+try:
+    from urllib.parse import urlparse, urlunparse
+except ImportError:
+    from urlparse import urlparse, urlunparse
 import re
 import logging
 
