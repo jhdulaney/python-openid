@@ -7,9 +7,19 @@ __all__ = ['fetch', 'getDefaultFetcher', 'setDefaultFetcher', 'HTTPResponse',
            'HTTPFetcher', 'createHTTPFetcher', 'HTTPFetchingError',
            'HTTPError']
 
-import urllib2
+try:
+    import urllib.request as urllib2
+except ImportError:
+    import urllib2
+try:
+    import urllib.error.HTTPError
+except ImportError:
+    urllib2.HTTPError
 import time
-import cStringIO
+try:
+    import cStringIO
+except ImportError:
+    import io as cStringIO
 import sys
 
 import openid
@@ -209,7 +219,7 @@ class Urllib2Fetcher(HTTPFetcher):
                 return self._makeResponse(f)
             finally:
                 f.close()
-        except urllib2.HTTPError, why:
+        except HTTPError as why:
             try:
                 return self._makeResponse(why)
             finally:

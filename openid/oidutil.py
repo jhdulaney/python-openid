@@ -8,11 +8,12 @@ interesting.
 __all__ = ['log', 'appendArgs', 'toBase64', 'fromBase64', 'autoSubmitHTML', 'toUnicode']
 
 import binascii
-import sys
-import urlparse
 import logging
 
-from urllib import urlencode
+try: # python3
+    from urllib.parse import urlencode
+except ImportError: # python
+    from urllib import urlencode
 
 elementtree_modules = [
     'lxml.etree',
@@ -32,7 +33,7 @@ def toUnicode(value):
     """
     if isinstance(value, str):
         return value.decode('utf-8')
-    return unicode(value)
+    return str(value)
 
 def autoSubmitHTML(form, title='OpenID transaction in progress'):
     return """
@@ -79,14 +80,13 @@ def importElementTree(module_names=None):
                 raise
             except:
                 logging.exception('Not using ElementTree library %r because it failed to '
-                    'parse a trivial document: %s' % mod_name)
+                                  'parse a trivial document: %s' % mod_name)
             else:
                 return ElementTree
     else:
         raise ImportError('No ElementTree library found. '
                           'You may need to install one. '
-                          'Tried importing %r' % (module_names,)
-                          )
+                          'Tried importing %r' % (module_names,))
 
 def log(message, level=0):
     """Handle a log message from the OpenID library.
@@ -107,7 +107,7 @@ def log(message, level=0):
     """
 
     logging.error("This is a legacy log message, please use the "
-      "logging module. Message: %s", message)
+                  "logging module. Message: %s", message)
 
 def appendArgs(url, args):
     """Append query arguments to a HTTP(s) URL. If the URL already has
@@ -129,7 +129,7 @@ def appendArgs(url, args):
     @rtype: str
     """
     if hasattr(args, 'items'):
-        args = args.items()
+        args = list(args.items())
         args.sort()
     else:
         args = list(args)
@@ -164,7 +164,7 @@ def toBase64(s):
 def fromBase64(s):
     try:
         return binascii.a2b_base64(s)
-    except binascii.Error, why:
+    except binascii.Error as why:
         # Convert to a common exception type
         raise ValueError(why[0])
 
@@ -181,10 +181,10 @@ class Symbol(object):
         return type(self) is type(other) and self.name == other.name
 
     def __ne__(self, other):
-        return not (self == other)
+        return not self == other
 
     def __hash__(self):
         return hash((self.__class__, self.name))
-   
+
     def __repr__(self):
         return '<Symbol %s>' % (self.name,)

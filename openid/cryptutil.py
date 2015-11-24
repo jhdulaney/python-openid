@@ -97,7 +97,7 @@ except ImportError:
         reversed
     except NameError:
         def reversed(seq):
-            return map(seq.__getitem__, xrange(len(seq) - 1, -1, -1))
+            return list(map(seq.__getitem__, xrange(len(seq) - 1, -1, -1)))
 
     def longToBinary(l):
         if l == 0:
